@@ -1,0 +1,11 @@
+.venv/
+Dataset/
+**/__pycache__/
+**/.idea/
+yolov5/
+cache*/
+*.wav
+*_text.txt
+*.xlsx
+*.mp3
+api_key.txt
