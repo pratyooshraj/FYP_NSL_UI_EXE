@@ -4,6 +4,7 @@ Dataset/
 **/.idea/
 yolov5/
 cache*/
+Text_and_Audio/
 *.wav
 *_text.txt
 *.xlsx

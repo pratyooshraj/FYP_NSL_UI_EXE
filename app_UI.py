@@ -1,5 +1,3 @@
-need cache and yolov5 folder
-
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import filedialog as fd
@@ -22,7 +20,7 @@ warnings.simplefilter("ignore", category=FutureWarning)
 
 from gesture_mapping import consonants_mapping, vowels_mapping, consonant_vowel_matrix
 
-os.environ['TORCH_HOME'] = "D:/Programming/FYP_NSL/cache2"
+os.environ['TORCH_HOME'] = "D:/Programming/FYP_NSL_UI_EXE/cache1"
 
 
 class SignAlphabetApp:
@@ -50,7 +48,7 @@ class SignAlphabetApp:
 
         self.text_box = tk.Text(self.center_frame, height=1, width=43, wrap="word", font=("Noto Sans Devanagari", 25))
         self.text_box.grid(row=0, column=0, columnspan=3, padx=10, pady=10)
-        self.text_box.insert("1.0", "नेपाली भाषा समर्थन गरिएको छ")
+        # self.text_box.insert("1.0", "नेपाली भाषा समर्थन गरिएको छ")
         # self.text_box.insert("1.0", "नेपाली भाषा")
         # self.text_box.insert("1.0", "हरइयओ कआअपई")
 
@@ -86,14 +84,15 @@ class SignAlphabetApp:
         self.speak_button.grid(row=0, column=4, padx=10, sticky='ew')
 
         # self.model = torch.hub.load("ultralytics/yolov5", "custom",path="D:/Programming/cuda_test/yolov5/all_model.pt").half().to("cuda")
-        # self.model = torch.hub.load("ultralytics/yolov5", "custom",path="D:/Programming/FYP_NSL/yolov5/640all.pt", force_reload=True).half().to("cuda")
-        self.model = torch.hub.load("ultralytics/yolov5", "custom",path="D:/Programming/FYP_NSL/yolov5/640all.pt").half().to("cuda")
+        # self.model = torch.hub.load("ultralytics/yolov5", "custom",path="D:/Programming/FYP_NSL_UI_EXE/yolov5/640all.pt", force_reload=True).half().to("cuda")
+        # self.model = torch.hub.load("ultralytics/yolov5", "custom",path="D:/Programming/FYP_NSL_UI_EXE/yolov5/640all.pt").half().to("cuda")
+        self.model = torch.hub.load("ultralytics/yolov5", "custom",path="D:/Programming/FYP_NSL_UI_EXE/yolov5/640final.pt").half().to("cuda")
 
         self.cap = None  # Camera feed will be initialized on start
         self.running = False
         self.video_thread = None
 
-        self.rolling_window = 4  # 4-second detection window
+        self.rolling_window = 3  # 4-second detection window
         self.start_time = None
         self.detections = defaultdict(lambda: {"count": 0, "confidence_sum": 0.0})
 
@@ -101,8 +100,8 @@ class SignAlphabetApp:
         filetypes=[('Text File','*.txt')]
         filename = fd.askopenfilename(
             title='Open a file',
-            # initialdir='D:/Programming/FYP_NSL/UI',
-            initialdir="D:/Programming/FYP_NSL/Text_and_Audio",
+            # initialdir='D:/Programming/FYP_NSL_UI_EXE/UI',
+            initialdir="D:/Programming/FYP_NSL_UI_EXE/Text_and_Audio",
             filetypes=filetypes)
         self.open_saved_file(filename)
 
@@ -154,7 +153,7 @@ class SignAlphabetApp:
 
                         cv2.rectangle(frame, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 2)
                         cv2.putText(frame, f"{class_name} {confidence:.2f}", (int(x1), int(y1)),
-                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+                                cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
                 # img = Image.fromarray(rgb_frame)
                 img = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
@@ -183,6 +182,7 @@ class SignAlphabetApp:
 
     def clear_textbox(self):
         self.text_box.delete("1.0", tk.END)
+        self.start_time = time.time()
 
     def process_text(self):
         text = self.text_box.get("1.0", tk.END).strip()
@@ -222,7 +222,7 @@ class SignAlphabetApp:
         self.process_text()
         text = self.text_box.get("1.0", tk.END).strip()
 
-        save_location=r"D:\Programming\FYP_NSL\Text_and_Audio"
+        save_location=r"D:\Programming\FYP_NSL_UI_EXE\Text_and_Audio"
         if not os.path.exists(save_location):
             os.makedirs(save_location)
 
@@ -240,19 +240,18 @@ class SignAlphabetApp:
         self.process_text()
         text = self.text_box.get("1.0", tk.END).strip()
 
-        save_location = r"D:\Programming\FYP_NSL\Text_and_Audio"
+        sound_save_location=r"D:\Programming\FYP_NSL_UI_EXE\Text_and_Audio"
+        if not os.path.exists(sound_save_location):
+            os.makedirs(sound_save_location)
 
         if text:
             try:
-                if not os.path.exists(save_location):
-                    os.makedirs(save_location)
-
                 current_time = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
                 speech_filename = f"{current_time}.mp3"
-                speech_file_path = os.path.join(save_location, speech_filename)  # Combine path and filename
+                speech_file_path = os.path.join(sound_save_location, speech_filename)  # Combine path and filename
 
                 tts = gTTS(text, lang='ne')
-                tts.save(speech_filename)
+                tts.save(speech_file_path)
                 os.system(f"start {speech_file_path}")
 
                 messagebox.showinfo("Speak", f"Speaking text: {text}")
