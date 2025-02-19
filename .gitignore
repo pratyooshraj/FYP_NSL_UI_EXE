@@ -5,8 +5,16 @@ Dataset/
 yolov5/
 cache*/
 Text_and_Audio/
+temp/
+build/
+dist/
+output/
+*.exe
 *.wav
 *_text.txt
 *.xlsx
 *.mp3
 api_key.txt
+*.ico
+*.spec
+*.ico

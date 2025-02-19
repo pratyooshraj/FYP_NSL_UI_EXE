@@ -92,7 +92,7 @@ class SignAlphabetApp:
         self.running = False
         self.video_thread = None
 
-        self.rolling_window = 3  # 4-second detection window
+        self.rolling_window = 4  # 4-second detection window
         self.start_time = None
         self.detections = defaultdict(lambda: {"count": 0, "confidence_sum": 0.0})
 
